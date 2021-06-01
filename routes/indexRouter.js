@@ -1,7 +1,10 @@
 const express = require('express');
 const multer = require('multer');
 const dbClient = require('../database');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
+
 
 
 
@@ -25,10 +28,6 @@ router.route('/player')
     });
 router.route('/player/avatar/:id')
     //to get a player
-    .put((req, res) => {
-        const player = players.find(val => val.id === Number(req.params.id));
-        return res.json(player);
-    });
 router.route('/player/:id')
     //to get an item 
     .get(async(req, res) => {
@@ -69,17 +68,27 @@ router.route('/player/:id')
        })
      });
 
-    
-     router.route('/player/avatar/:id')
+     // FILESTORAGE FOR MULTER
+const file_storage_eng = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, path.join(__dirname, '../images')),
+  filename: (req, file, cb) => cb(null, "db_img" + uuidv4() + file.originalname)
+});
+
+const upload = multer({ storage: file_storage_eng });
+
+ router.route("/player/avatar/:id")
+  .put(upload.single("avatar"), async (req, res) => {
+
      //to get an item 
-     .put(async(req, res) => {
        const id = parseInt(req.params.id);
-       
-      //  await dbClient.query('SELECT * FROM players WHERE id = $1', [id], (error, results) => {
-      //    if (error) {
-      //      throw error
-      //    }
-      //    res.status(200).json(results.rows)
-      //  })
-     })
+       const {filename} = req.file;
+       await dbClient.query('UPDATE players SET  avatar= $1 WHERE id = $2',
+       [filename, id], (error, results) => {
+         if (error) {
+           throw error
+         }
+         res.status(200).json({msg:"avatar image uploaded"})
+       })
+    //  
+  })
 module.exports = router;

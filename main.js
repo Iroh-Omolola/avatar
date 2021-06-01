@@ -5,7 +5,7 @@ const multer = require ('multer');
 const path = require ('path');
 const process = require('process');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 const userRouter = require('./routes/indexRouter');
 const cors = require('cors');
 
