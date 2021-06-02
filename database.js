@@ -1,4 +1,5 @@
-const { Client } = require('pg'); 
+import pkg  from 'pg'; 
+const {Client} = pkg;
 const client = new Client({
     user: "postgres",
     host: "localhost",
@@ -8,5 +9,6 @@ const client = new Client({
 });
 
 client.connect()
-.then(()=>console.log("connected succesfully!"))
-module.exports = client;
+.then(()=>console.log("connected succesfully!"));
+
+export default client;
